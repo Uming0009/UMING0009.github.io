@@ -666,7 +666,12 @@
     async function loadCloudRecords() {
       if (!cloudEnabled()) return [];
       const rows = await cloudRequest("accounting_records?select=payload&order=updated_at.desc");
-      return rows.map((row) => row.payload).filter(Boolean);
+      return rows.map((row) => row.payload).filter((record) => record && !record.deleted);
+    }
+
+    async function loadCloudRecordRows() {
+      if (!cloudEnabled()) return [];
+      return cloudRequest("accounting_records?select=id,payload,updated_at");
     }
 
     async function saveCloudRecords() {
@@ -694,7 +699,28 @@
 
     async function replaceCloudRecords() {
       if (!cloudEnabled()) return;
-      await clearCloudRecords();
+      const now = new Date().toISOString();
+      const currentIds = new Set(records.map((record) => record.id));
+      const existingRows = await loadCloudRecordRows();
+      const deletedRows = existingRows
+        .filter((row) => row.id && !currentIds.has(row.id))
+        .map((row) => ({
+          id: row.id,
+          payload: {
+            ...(row.payload || {}),
+            id: row.id,
+            deleted: true,
+            updated_at: now
+          },
+          updated_at: now
+        }));
+      if (deletedRows.length) {
+        await cloudRequest("accounting_records?on_conflict=id", {
+          method: "POST",
+          headers: { "Prefer": "resolution=merge-duplicates" },
+          body: JSON.stringify(deletedRows)
+        });
+      }
       await saveCloudRecords();
       await saveCloudSettings();
     }
@@ -1125,8 +1151,8 @@
       try {
         await replaceCloudRecords();
         alert("\u5df2\u7528\u76ee\u524d\u756b\u9762\u7684\u8cc7\u6599\u8986\u84cb\u96f2\u7aef\u3002");
-      } catch {
-        alert("\u8986\u84cb\u96f2\u7aef\u5931\u6557\uff0c\u8acb\u6aa2\u67e5 Supabase \u522a\u9664\u6b0a\u9650\u548c\u7db2\u8def\u72c0\u614b\u3002");
+      } catch (error) {
+        alert(`\u8986\u84cb\u96f2\u7aef\u5931\u6557\uff1a${error.message || "\u8acb\u6aa2\u67e5 Supabase \u8a2d\u5b9a\u548c\u7db2\u8def\u72c0\u614b\u3002"}`);
       } finally {
         $("cloudReplaceBtn").disabled = false;
         $("cloudReplaceBtn").textContent = "\u8986\u84cb\u96f2\u7aef";
