@@ -463,6 +463,7 @@
         </div>
         <div class="actions">
           <button class="btn" id="cloudSyncBtn">&#21516;&#27493;&#38642;&#31471;</button>
+          <button class="btn danger" id="cloudReplaceBtn">&#35206;&#33995;&#38642;&#31471;</button>
           <button class="btn" id="exportCsvBtn">&#21295;&#20986; CSV</button>
           <button class="btn primary" id="syncBtn">&#21516;&#27493; Excel</button>
         </div>
@@ -680,6 +681,21 @@
         headers: { "Prefer": "resolution=merge-duplicates" },
         body: JSON.stringify(rows)
       });
+    }
+
+    async function clearCloudRecords() {
+      if (!cloudEnabled()) return;
+      await cloudRequest("accounting_records?id=not.is.null", {
+        method: "DELETE",
+        headers: { "Prefer": "return=minimal" }
+      });
+    }
+
+    async function replaceCloudRecords() {
+      if (!cloudEnabled()) return;
+      await clearCloudRecords();
+      await saveCloudRecords();
+      await saveCloudSettings();
     }
 
     async function loadCloudSettings() {
@@ -1097,6 +1113,25 @@
       }
     }
 
+    async function replaceCloudNow() {
+      if (!cloudEnabled()) {
+        alert("\u9084\u6c92\u6709\u8a2d\u5b9a\u96f2\u7aef\u8cc7\u6599\u5eab\u3002\u8acb\u5148\u5230 cloud-config.js \u586b\u5165 Supabase URL \u548c anon key\u3002");
+        return;
+      }
+      if (!confirm("\u9019\u6703\u7528\u76ee\u524d\u756b\u9762\u4e0a\u7684\u8cc7\u6599\u8986\u84cb\u96f2\u7aef\u3002\u4f60\u5df2\u7d93\u78ba\u8a8d\u73fe\u5728\u9019\u4efd\u8cc7\u6599\u662f\u6b63\u78ba\u7684\u55ce\uff1f")) return;
+      $("cloudReplaceBtn").disabled = true;
+      $("cloudReplaceBtn").textContent = "\u8986\u84cb\u4e2d";
+      try {
+        await replaceCloudRecords();
+        alert("\u5df2\u7528\u76ee\u524d\u756b\u9762\u7684\u8cc7\u6599\u8986\u84cb\u96f2\u7aef\u3002");
+      } catch {
+        alert("\u8986\u84cb\u96f2\u7aef\u5931\u6557\uff0c\u8acb\u6aa2\u67e5 Supabase \u522a\u9664\u6b0a\u9650\u548c\u7db2\u8def\u72c0\u614b\u3002");
+      } finally {
+        $("cloudReplaceBtn").disabled = false;
+        $("cloudReplaceBtn").textContent = "\u8986\u84cb\u96f2\u7aef";
+      }
+    }
+
     $("recordDate").value = today();
     $("parseBtn").addEventListener("click", addParsedRecords);
     $("clearInputBtn").addEventListener("click", () => {
@@ -1111,6 +1146,7 @@
     $("deleteCategoryBtn").addEventListener("click", () => deleteOption("categories"));
     $("syncBtn").addEventListener("click", syncExcel);
     $("cloudSyncBtn").addEventListener("click", syncCloudNow);
+    $("cloudReplaceBtn").addEventListener("click", replaceCloudNow);
     $("exportCsvBtn").addEventListener("click", () => download(`accounting-${today()}.csv`, toCsv(), "text/csv;charset=utf-8"));
     $("clearAllBtn").addEventListener("click", async () => {
       if (!confirm("確定要清除所有資料？")) return;
