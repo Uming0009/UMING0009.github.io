@@ -549,6 +549,7 @@
             <label for="vendorFilter">&#24288;&#21830;</label>
             <select id="vendorFilter"><option value="">&#20840;&#37096;</option></select>
           </div>
+          <button class="btn danger" id="cloudReplaceTableBtn">&#35206;&#33995;&#38642;&#31471;</button>
           <button class="btn danger" id="clearAllBtn">&#28165;&#38500;&#20840;&#37096;</button>
         </div>
         <div class="table-wrap">
@@ -1147,6 +1148,7 @@
     $("syncBtn").addEventListener("click", syncExcel);
     $("cloudSyncBtn").addEventListener("click", syncCloudNow);
     $("cloudReplaceBtn").addEventListener("click", replaceCloudNow);
+    $("cloudReplaceTableBtn").addEventListener("click", replaceCloudNow);
     $("exportCsvBtn").addEventListener("click", () => download(`accounting-${today()}.csv`, toCsv(), "text/csv;charset=utf-8"));
     $("clearAllBtn").addEventListener("click", async () => {
       if (!confirm("確定要清除所有資料？")) return;
