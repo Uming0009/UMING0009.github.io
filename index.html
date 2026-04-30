@@ -632,6 +632,12 @@
       return response.json();
     }
 
+    function localExcelApi(path) {
+      const host = location.hostname;
+      const isLocal = host === "127.0.0.1" || host === "localhost" || host === "";
+      return isLocal ? path : `http://127.0.0.1:8765${path}`;
+    }
+
     function cloudEnabled() {
       return Boolean(CLOUD_CONFIG.supabaseUrl && CLOUD_CONFIG.supabaseAnonKey);
     }
@@ -1049,14 +1055,18 @@
       $("syncBtn").disabled = true;
       $("syncBtn").textContent = "同步中";
       try {
-        const result = await requestJson("/api/sync", {
+        const result = await requestJson(localExcelApi("/api/sync"), {
           method: "POST",
           body: JSON.stringify({ excel_path: excelPath, records })
         });
         config.excel_path = result.excel_path;
         alert(`已同步 ${result.count} 筆資料到 Excel。`);
-      } catch {
-        alert("同步失敗，請確認已用啟動檔開啟 app，且 Excel 檔案沒有正在被鎖定。");
+      } catch (error) {
+        const isHosted = location.hostname !== "127.0.0.1" && location.hostname !== "localhost" && location.hostname !== "";
+        const message = isHosted
+          ? "\u540c\u6b65\u5931\u6557\u3002\u8acb\u78ba\u8a8d\u9019\u53f0\u96fb\u8166\u5df2\u5148\u96d9\u64ca start-accounting-app.bat\uff0c\u4e26\u4e14 Excel \u6a94\u6848\u6c92\u6709\u6b63\u5728\u958b\u555f\u3002"
+          : "\u540c\u6b65\u5931\u6557\u3002\u8acb\u78ba\u8a8d Excel \u6a94\u6848\u6c92\u6709\u6b63\u5728\u958b\u555f\uff0c\u6216\u6539\u7528\u53e6\u4e00\u500b .xlsx \u8def\u5f91\u3002";
+        alert(message);
       } finally {
         $("syncBtn").disabled = false;
         $("syncBtn").textContent = "同步 Excel";
