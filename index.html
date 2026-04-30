@@ -1,0 +1,1141 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>&#20844;&#21496;&#35352;&#24115;&#25972;&#29702;</title>
+  <meta name="theme-color" content="#176b62">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="公司記帳">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f6f3;
+      --panel: #ffffff;
+      --ink: #1f2528;
+      --muted: #667176;
+      --line: #d9dfdb;
+      --brand: #176b62;
+      --brand-dark: #0f514a;
+      --accent: #b86f2d;
+      --danger: #b64242;
+      --soft: #edf4f1;
+      --nav: #183633;
+      --shadow: 0 12px 28px rgba(31, 37, 40, .08);
+      font-family: "Microsoft JhengHei", "Noto Sans TC", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { border: 0; cursor: pointer; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+    }
+
+    aside {
+      background: var(--nav);
+      color: #eef7f4;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-height: 100vh;
+    }
+
+    .brand h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 0;
+      color: #c8d9d5;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .side-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .side-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .count-badge {
+      min-width: 34px;
+      min-height: 28px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.1);
+      color: #d8e8e4;
+      font-size: 13px;
+      padding: 0 10px;
+    }
+
+    .project-nav {
+      display: grid;
+      gap: 10px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    details.project-card {
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    details.project-card summary {
+      list-style: none;
+      padding: 12px;
+      display: grid;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    details.project-card summary::-webkit-details-marker { display: none; }
+
+    .project-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .project-title span:first-child {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .project-total {
+      color: #c8d9d5;
+      font-size: 12px;
+    }
+
+    .project-events {
+      display: grid;
+      gap: 8px;
+      padding: 0 12px 12px;
+    }
+
+    .event-day {
+      color: #f2f8f6;
+      font-size: 12px;
+      border-top: 1px solid rgba(255,255,255,.12);
+      padding-top: 9px;
+      margin-top: 2px;
+    }
+
+    .event-line {
+      color: #c8d9d5;
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    main {
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .topbar p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 40px;
+      border-radius: 8px;
+      padding: 0 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn.primary {
+      background: var(--brand);
+      color: white;
+      border-color: var(--brand);
+    }
+
+    .btn.primary:hover { background: var(--brand-dark); }
+    .btn.danger { color: var(--danger); }
+    .btn.small { min-height: 36px; padding: 0 11px; }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-head {
+      padding: 18px 18px 0;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .body {
+      padding: 18px;
+    }
+
+    .input-layout {
+      display: grid;
+      grid-template-columns: minmax(340px, 1fr) 300px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 13px;
+    }
+
+    label {
+      color: #3d484c;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 11px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 210px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(23, 107, 98, .12);
+    }
+
+    .select-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .manage-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: #fafbf9;
+    }
+
+    .manage-panel + .manage-panel { margin-top: 12px; }
+
+    .manage-panel h4 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .totals {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      background: var(--soft);
+      border: 1px solid #d8e7e1;
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .metric strong {
+      font-size: 20px;
+      overflow-wrap: anywhere;
+    }
+
+    .table-toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 180px 180px auto;
+      gap: 10px;
+      padding: 18px;
+      align-items: end;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border-top: 1px solid var(--line);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 880px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f4f7f5;
+      color: #425057;
+      font-size: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    td.money, th.money { text-align: right; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 25px;
+      border-radius: 999px;
+      padding: 0 10px;
+      background: #edf2f7;
+      color: #334155;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--muted);
+    }
+
+    .icon-btn:hover {
+      color: var(--danger);
+      border-color: #efb5b5;
+    }
+
+    .amount-input {
+      width: 120px;
+      min-height: 34px;
+      text-align: right;
+      padding: 7px 9px;
+    }
+
+    .notice {
+      min-height: 22px;
+      margin-top: 10px;
+      color: var(--brand-dark);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .empty {
+      padding: 40px 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .mobile-note {
+      display: grid;
+      gap: 10px;
+      line-height: 1.6;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mobile-note strong {
+      color: var(--ink);
+    }
+
+    @media (max-width: 1040px) {
+      .app { grid-template-columns: 1fr; }
+      aside { min-height: auto; }
+      .input-layout, .totals, .table-toolbar { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .actions { justify-content: flex-start; }
+    }
+
+    @media (max-width: 640px) {
+      main { padding: 14px; }
+      aside { padding: 18px 14px; }
+      .select-row { grid-template-columns: 1fr; }
+      .btn { width: 100%; }
+      .topbar h2 { font-size: 21px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <h1>&#20844;&#21496;&#35352;&#24115;&#25972;&#29702;</h1>
+        <p>&#19968;&#27425;&#36028;&#19978;&#22810;&#31558;&#20839;&#23481;&#65292;&#36984;&#26696;&#23376;&#21644;&#24288;&#21830;&#24460;&#20877;&#25972;&#29702;&#20837;&#24235;&#12290;</p>
+      </div>
+
+      <div class="side-head">
+        <h2>&#24037;&#22320;&#35352;&#37636;</h2>
+        <span class="count-badge" id="sideCount">0</span>
+      </div>
+      <div class="project-nav" id="projectNav"></div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div>
+          <h2>&#24555;&#36895;&#25972;&#29702;</h2>
+          <p>&#20363;&#22914;&#65306;&#29066;&#35987;&#20185;&#20025;6&#21515;*400&#12290;&#19968;&#34892;&#19968;&#31558;&#65292;&#20808;&#36984;&#26696;&#23376;&#21644;&#24288;&#21830;&#65292;&#25353;&#19979;&#25972;&#29702;&#25165;&#26371;&#23531;&#20837;&#36039;&#26009;&#24235;&#12290;</p>
+        </div>
+        <div class="actions">
+          <button class="btn" id="cloudSyncBtn">&#21516;&#27493;&#38642;&#31471;</button>
+          <button class="btn" id="exportCsvBtn">&#21295;&#20986; CSV</button>
+          <button class="btn primary" id="syncBtn">&#21516;&#27493; Excel</button>
+        </div>
+      </div>
+
+      <section>
+        <div class="body input-layout">
+          <div>
+            <div class="field">
+              <label for="quickInput">&#21483;&#36008;&#20839;&#23481;</label>
+              <textarea id="quickInput" placeholder="&#32048;&#33865;&#26460;&#40509;6&#21515;500;&#10;&#29066;&#35987;&#20185;&#20025;6&#21515;*400;&#10;&#27700;&#27877;20&#21253;"></textarea>
+            </div>
+            <div class="actions">
+              <button class="btn primary" id="parseBtn">&#25972;&#29702;&#20006;&#21152;&#20837;</button>
+              <button class="btn" id="clearInputBtn">&#28165;&#31354;&#36664;&#20837;</button>
+            </div>
+            <div class="notice" id="quickNotice"></div>
+          </div>
+
+          <div>
+            <div class="manage-panel">
+              <h4>&#20351;&#29992;&#26696;&#23376;</h4>
+              <div class="select-row">
+                <div class="field">
+                  <label for="projectSelect">&#36984;&#25799;&#26696;&#23376;</label>
+                  <select id="projectSelect"></select>
+                </div>
+                <button class="btn small" id="addProjectBtn">&#26032;&#22686;</button>
+                <button class="btn small danger" id="deleteProjectBtn">&#21034;&#38500;</button>
+              </div>
+            </div>
+
+            <div class="manage-panel">
+              <h4>&#21483;&#36008;&#24288;&#21830;</h4>
+              <div class="select-row">
+                <div class="field">
+                  <label for="vendorSelect">&#36984;&#25799;&#24288;&#21830;</label>
+                  <select id="vendorSelect"></select>
+                </div>
+                <button class="btn small" id="addVendorBtn">&#26032;&#22686;</button>
+                <button class="btn small danger" id="deleteVendorBtn">&#21034;&#38500;</button>
+              </div>
+            </div>
+
+            <div class="manage-panel">
+              <h4>&#20998;&#39006;</h4>
+              <div class="select-row">
+                <div class="field">
+                  <label for="categorySelect">&#36984;&#25799;&#20998;&#39006;</label>
+                  <select id="categorySelect"></select>
+                </div>
+                <button class="btn small" id="addCategoryBtn">&#26032;&#22686;</button>
+                <button class="btn small danger" id="deleteCategoryBtn">&#21034;&#38500;</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="recordDate">&#20837;&#24115;&#26085;&#26399;</label>
+              <input id="recordDate" type="date">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="totals">
+        <div class="metric"><span>&#36039;&#26009;&#31558;&#25976;</span><strong id="totalCount">0</strong></div>
+        <div class="metric"><span>&#32317;&#37329;&#38989;</span><strong id="totalAmount">$0</strong></div>
+        <div class="metric"><span>&#26696;&#23376;&#25976;</span><strong id="projectCount">0</strong></div>
+        <div class="metric"><span>&#24288;&#21830;&#25976;</span><strong id="vendorCount">0</strong></div>
+      </div>
+
+      <section>
+        <div class="table-toolbar">
+          <div class="field">
+            <label for="search">&#25628;&#23563;</label>
+            <input id="search" placeholder="&#21697;&#38917;&#12289;&#26696;&#23376;&#12289;&#24288;&#21830;">
+          </div>
+          <div class="field">
+            <label for="projectFilter">&#26696;&#23376;</label>
+            <select id="projectFilter"><option value="">&#20840;&#37096;</option></select>
+          </div>
+          <div class="field">
+            <label for="vendorFilter">&#24288;&#21830;</label>
+            <select id="vendorFilter"><option value="">&#20840;&#37096;</option></select>
+          </div>
+          <button class="btn danger" id="clearAllBtn">&#28165;&#38500;&#20840;&#37096;</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>&#26085;&#26399;</th>
+                <th>&#26696;&#23376;</th>
+                <th>&#24288;&#21830;</th>
+                <th>&#20839;&#23481;</th>
+                <th>&#25976;&#37327;</th>
+                <th>&#21934;&#20301;</th>
+                <th>&#20998;&#39006;</th>
+                <th class="money">&#37329;&#38989;</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="recordRows"></tbody>
+          </table>
+          <div class="empty" id="emptyState">&#30446;&#21069;&#27809;&#26377;&#36039;&#26009;&#65292;&#20808;&#36028;&#19978;&#20839;&#23481;&#20006;&#25353;&#19979;&#25972;&#29702;&#12290;</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h3>&#26410;&#20358;&#25163;&#27231; App &#26041;&#21521;</h3>
+        </div>
+        <div class="body mobile-note">
+          <div><strong>PWA &#31532;&#19968;&#27493;&#65306;</strong>&#21487;&#20197;&#25226;&#36889;&#20491;&#32178;&#38913;&#25913;&#25104;&#21487;&#23433;&#35037;&#30340;&#25163;&#27231;&#29256;&#65292;&#25163;&#27231;&#26700;&#38754;&#26371;&#26377;&#22294;&#31034;&#65292;&#21487;&#38626;&#32218;&#26283;&#23384;&#12290;</div>
+          <div><strong>&#38642;&#31471;&#21516;&#27493;&#65306;</strong>&#26410;&#20358;&#33509;&#35201;&#22810;&#37096;&#25163;&#27231;&#20849;&#29992;&#65292;&#38656;&#35201;&#21152;&#19968;&#20491;&#38642;&#31471;&#36039;&#26009;&#24235;&#65292;&#21508;&#25163;&#27231;&#25165;&#33021;&#30475;&#21040;&#21516;&#19968;&#20221;&#35352;&#37636;&#12290;</div>
+          <div><strong>Excel &#26041;&#24335;&#65306;</strong>&#25163;&#27231;&#19981;&#36969;&#21512;&#30452;&#25509;&#23531;&#20837;&#38651;&#33126;&#30340; Excel&#65292;&#27604;&#36611;&#22909;&#30340;&#20570;&#27861;&#26159;&#20808;&#21516;&#27493;&#21040;&#38642;&#31471;&#65292;&#38651;&#33126;&#31471;&#20877;&#36000;&#36012;&#21295;&#20837; Excel&#12290;</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/cloud-config.js"></script>
+  <script>
+    const SETTINGS_KEY = "accounting-settings-v3";
+    const OFFLINE_RECORDS_KEY = "accounting-records-offline";
+    const CLOUD_CONFIG = window.APP_CLOUD_CONFIG || {};
+    const money = new Intl.NumberFormat("zh-TW", { style: "currency", currency: "TWD", maximumFractionDigits: 0 });
+    const headers = ["\u65e5\u671f","\u4f7f\u7528\u6848\u5b50","\u5167\u5bb9\u54c1\u9805","\u6578\u91cf","\u55ae\u4f4d","\u53eb\u8ca8\u5ee0\u5546","\u5206\u985e","\u91d1\u984d","\u5099\u8a3b","\u539f\u59cb\u5167\u5bb9","\u5efa\u7acb\u6642\u9593"];
+    let records = [];
+    let config = { excel_path: "" };
+    let settings = loadSettings();
+
+    const $ = (id) => document.getElementById(id);
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function loadSettings() {
+      const fallback = {
+        projects: ["\u672a\u5206\u985e\u5de5\u5730"],
+        vendors: ["\u672a\u6307\u5b9a\u5ee0\u5546"],
+        categories: ["\u690d\u683d", "\u6750\u6599", "\u4e94\u91d1", "\u8a2d\u5099", "\u904b\u8cbb", "\u4eba\u5de5", "\u5176\u4ed6"]
+      };
+      try {
+        const stored = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+        return {
+          projects: Array.isArray(stored.projects) && stored.projects.length ? stored.projects : fallback.projects,
+          vendors: Array.isArray(stored.vendors) && stored.vendors.length ? stored.vendors : fallback.vendors,
+          categories: Array.isArray(stored.categories) && stored.categories.length ? stored.categories : fallback.categories
+        };
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveSettings() {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    }
+
+    async function requestJson(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) }
+      });
+      if (!response.ok) throw new Error(await response.text());
+      return response.json();
+    }
+
+    function cloudEnabled() {
+      return Boolean(CLOUD_CONFIG.supabaseUrl && CLOUD_CONFIG.supabaseAnonKey);
+    }
+
+    function cloudUrl(path) {
+      return `${String(CLOUD_CONFIG.supabaseUrl).replace(/\/$/, "")}/rest/v1/${path}`;
+    }
+
+    async function cloudRequest(path, options = {}) {
+      const response = await fetch(cloudUrl(path), {
+        ...options,
+        headers: {
+          "apikey": CLOUD_CONFIG.supabaseAnonKey,
+          "Authorization": `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`,
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
+      if (!response.ok) throw new Error(await response.text());
+      if (response.status === 204) return null;
+      return response.json();
+    }
+
+    async function loadCloudRecords() {
+      if (!cloudEnabled()) return [];
+      const rows = await cloudRequest("accounting_records?select=payload&order=updated_at.desc");
+      return rows.map((row) => row.payload).filter(Boolean);
+    }
+
+    async function saveCloudRecords() {
+      if (!cloudEnabled() || !records.length) return;
+      const now = new Date().toISOString();
+      const rows = records.map((record) => ({
+        id: record.id,
+        payload: record,
+        updated_at: record.updated_at || record.created_at || now
+      }));
+      await cloudRequest("accounting_records?on_conflict=id", {
+        method: "POST",
+        headers: { "Prefer": "resolution=merge-duplicates" },
+        body: JSON.stringify(rows)
+      });
+    }
+
+    async function loadCloudSettings() {
+      if (!cloudEnabled()) return null;
+      const rows = await cloudRequest("accounting_app_settings?select=payload&key=eq.default");
+      return rows[0]?.payload || null;
+    }
+
+    async function saveCloudSettings() {
+      if (!cloudEnabled()) return;
+      await cloudRequest("accounting_app_settings?on_conflict=key", {
+        method: "POST",
+        headers: { "Prefer": "resolution=merge-duplicates" },
+        body: JSON.stringify([{ key: "default", payload: settings, updated_at: new Date().toISOString() }])
+      });
+    }
+
+    function mergeRecords(localRows, cloudRows) {
+      const byId = new Map();
+      [...localRows, ...cloudRows].forEach((record) => {
+        if (!record || !record.id) return;
+        const current = byId.get(record.id);
+        const currentTime = Date.parse(current?.updated_at || current?.created_at || "") || 0;
+        const nextTime = Date.parse(record.updated_at || record.created_at || "") || 0;
+        if (!current || nextTime >= currentTime) byId.set(record.id, record);
+      });
+      return [...byId.values()].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+    }
+
+    async function loadData() {
+      const offlineRecords = loadOfflineRecords();
+      if (cloudEnabled()) {
+        try {
+          const [cloudRecords, cloudSettings] = await Promise.all([
+            loadCloudRecords(),
+            loadCloudSettings()
+          ]);
+          records = mergeRecords(offlineRecords, cloudRecords);
+          if (cloudSettings) {
+            settings = {
+              projects: Array.isArray(cloudSettings.projects) && cloudSettings.projects.length ? cloudSettings.projects : settings.projects,
+              vendors: Array.isArray(cloudSettings.vendors) && cloudSettings.vendors.length ? cloudSettings.vendors : settings.vendors,
+              categories: Array.isArray(cloudSettings.categories) && cloudSettings.categories.length ? cloudSettings.categories : settings.categories
+            };
+            saveSettings();
+          }
+          hydrateSettingsFromRecords();
+          await persistRecords();
+          render();
+          return;
+        } catch {
+          records = offlineRecords;
+        }
+      }
+      try {
+        const [serverConfig, serverRecords] = await Promise.all([
+          requestJson("/api/config"),
+          requestJson("/api/records")
+        ]);
+        config = serverConfig;
+        records = Array.isArray(serverRecords) && serverRecords.length ? serverRecords : offlineRecords;
+      } catch {
+        records = offlineRecords;
+      }
+      hydrateSettingsFromRecords();
+      render();
+    }
+
+    async function persistRecords() {
+      localStorage.setItem(OFFLINE_RECORDS_KEY, JSON.stringify(records));
+      try {
+        await saveCloudRecords();
+        await saveCloudSettings();
+      } catch {
+      }
+      try {
+        await requestJson("/api/records", {
+          method: "POST",
+          body: JSON.stringify({ records })
+        });
+      } catch {
+        return;
+      }
+    }
+
+    function loadOfflineRecords() {
+      try {
+        return JSON.parse(localStorage.getItem(OFFLINE_RECORDS_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function hydrateSettingsFromRecords() {
+      const projects = unique(records.map((record) => record.project).filter(Boolean));
+      const vendors = unique(records.map((record) => record.vendor).filter(Boolean));
+      const categories = unique(records.map((record) => record.category).filter(Boolean));
+      settings.projects = unique([...settings.projects, ...projects]);
+      settings.vendors = unique([...settings.vendors, ...vendors]);
+      settings.categories = unique([...(settings.categories || []), ...categories]);
+      saveSettings();
+    }
+
+    function unique(values) {
+      return [...new Set(values.map((value) => String(value).trim()).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "zh-Hant"));
+    }
+
+    function uid() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
+    function cleanNumber(value) {
+      if (value === undefined || value === null || value === "") return 0;
+      const text = String(value).replace(/[,，$＄元]/g, "");
+      const match = text.match(/\d+(?:\.\d+)?/);
+      return match ? Number(match[0]) : 0;
+    }
+
+    function inferCategory(text) {
+      const rules = [
+        ["\u904b\u8cbb", ["\u904b\u8cbb", "\u914d\u9001", "\u8ca8\u904b", "\u642c\u904b"]],
+        ["\u4eba\u5de5", ["\u5de5\u8cc7", "\u4eba\u5de5", "\u5e2b\u5085", "\u9ede\u5de5"]],
+        ["\u4e94\u91d1", ["\u87ba\u7d72", "\u9435\u91d8", "\u9278\u934a", "\u4e94\u91d1", "\u9396"]],
+        ["\u8a2d\u5099", ["\u6a5f\u5177", "\u8a2d\u5099", "\u79df", "\u540a\u8eca", "\u767c\u96fb\u6a5f"]],
+        ["\u690d\u683d", ["\u675c\u9d51", "\u6a39", "\u82d7", "\u82b1", "\u8449", "\u76c6", "\u690d"]],
+        ["\u6750\u6599", ["\u6c34\u6ce5", "\u7802", "\u6c99", "\u78da", "\u677f", "\u6f06", "\u7ba1", "\u7dda", "\u6728", "\u92fc", "\u77f3"]]
+      ];
+      const found = rules.find(([, words]) => words.some((word) => text.includes(word)));
+      return found ? found[0] : "\u5176\u4ed6";
+    }
+
+    function parseLine(line, project, vendor, date, category) {
+      const raw = line.trim();
+      const compact = raw.replace(/\s+/g, "");
+      const sizeUnits = "\u540b|\u5c3a|\u5bf8|\u516c\u5206|cm|CM|mm|MM";
+      const countUnits = "\u5305|\u7bb1|\u500b|\u652f|\u5f0f|\u7d44|\u6876|\u5377|\u7247|\u7c73|\u624d|\u516c\u65a4|kg|KG|\u76d2|\u888b|\u682a|\u76c6";
+      const sizeQtyMatch = compact.match(new RegExp(`^(.+?)(\\d+(?:\\.\\d+)?(?:${sizeUnits}))(?:[*\uff0axX])?(\\d+(?:\\.\\d+)?)$`));
+      const countMatch = compact.match(new RegExp(`^(.+?)(\\d+(?:\\.\\d+)?)(${countUnits})$`));
+      const explicitAmountMatch = compact.match(/(?:\u91d1\u984d|\u5171|\u5408\u8a08|[$\uff04])(\d+(?:\.\d+)?)\u5143?$/);
+      let item = raw;
+      let quantity = "";
+      let unit = "";
+      let amount = "";
+
+      if (sizeQtyMatch) {
+        item = sizeQtyMatch[1];
+        unit = sizeQtyMatch[2];
+        quantity = cleanNumber(sizeQtyMatch[3]);
+      } else if (countMatch) {
+        item = countMatch[1];
+        quantity = cleanNumber(countMatch[2]);
+        unit = countMatch[3] || "";
+      }
+
+      if (explicitAmountMatch) {
+        amount = cleanNumber(explicitAmountMatch[1]);
+        item = item.replace(explicitAmountMatch[0], "").trim() || item;
+      }
+
+      return {
+        id: uid(),
+        date,
+        project,
+        item: item.trim() || raw,
+        quantity,
+        unit: unit.trim(),
+        vendor,
+        category: category || inferCategory(raw),
+        amount,
+        note: "",
+        raw,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+    }
+
+    function fillSelect(id, values, selectedValue, allLabel) {
+      const select = $(id);
+      select.innerHTML = allLabel ? `<option value="">${allLabel}</option>` : "";
+      select.innerHTML += values.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("");
+      if (selectedValue && values.includes(selectedValue)) select.value = selectedValue;
+    }
+
+    function addOption(kind) {
+      const labels = {
+        projects: "\u8acb\u8f38\u5165\u65b0\u7684\u6848\u5b50\u540d\u7a31",
+        vendors: "\u8acb\u8f38\u5165\u65b0\u7684\u5ee0\u5546\u540d\u7a31",
+        categories: "\u8acb\u8f38\u5165\u65b0\u7684\u5206\u985e\u540d\u7a31"
+      };
+      const selectIds = {
+        projects: "projectSelect",
+        vendors: "vendorSelect",
+        categories: "categorySelect"
+      };
+      const label = labels[kind];
+      const value = prompt(label);
+      if (!value || !value.trim()) return;
+      settings[kind] = unique([...settings[kind], value.trim()]);
+      saveSettings();
+      render();
+      $(selectIds[kind]).value = value.trim();
+    }
+
+    function deleteOption(kind) {
+      const selectIds = {
+        projects: "projectSelect",
+        vendors: "vendorSelect",
+        categories: "categorySelect"
+      };
+      const fields = {
+        projects: "project",
+        vendors: "vendor",
+        categories: "category"
+      };
+      const defaults = {
+        projects: "\u672a\u5206\u985e\u5de5\u5730",
+        vendors: "\u672a\u6307\u5b9a\u5ee0\u5546",
+        categories: "\u5176\u4ed6"
+      };
+      const selectId = selectIds[kind];
+      const value = $(selectId).value;
+      if (!value) return;
+      const used = records.some((record) => record[fields[kind]] === value);
+      if (used && !confirm("\u9019\u500b\u9805\u76ee\u5df2\u6709\u8cc7\u6599\uff0c\u522a\u9664\u4e0b\u62c9\u9078\u9805\u4e0d\u6703\u522a\u9664\u65e2\u6709\u7d00\u9304\u3002\u78ba\u5b9a\u522a\u9664\uff1f")) return;
+      settings[kind] = settings[kind].filter((item) => item !== value);
+      if (!settings[kind].length) settings[kind] = [defaults[kind]];
+      saveSettings();
+      render();
+    }
+
+    function filteredRecords() {
+      const term = $("search").value.trim().toLowerCase();
+      const project = $("projectFilter").value;
+      const vendor = $("vendorFilter").value;
+      return records.filter((record) => {
+        const haystack = [record.project, record.vendor, record.item, record.category, record.raw].join(" ").toLowerCase();
+        return (!term || haystack.includes(term)) &&
+          (!project || record.project === project) &&
+          (!vendor || record.vendor === vendor);
+      });
+    }
+
+    function renderSidebar() {
+      const container = $("projectNav");
+      const groups = {};
+      for (const record of records) {
+        const project = record.project || "未分類工地";
+        groups[project] ||= [];
+        groups[project].push(record);
+      }
+      const names = Object.keys(groups).sort((a, b) => a.localeCompare(b, "zh-Hant"));
+      $("sideCount").textContent = records.length;
+      if (!names.length) {
+        container.innerHTML = `<div class="event-line">尚未有工地紀錄</div>`;
+        return;
+      }
+      container.innerHTML = names.map((name) => {
+        const list = groups[name].slice().sort((a, b) => String(b.date).localeCompare(String(a.date)));
+        const total = list.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+        const byDate = {};
+        for (const record of list) {
+          byDate[record.date || "未填日期"] ||= [];
+          byDate[record.date || "未填日期"].push(record);
+        }
+        const events = Object.entries(byDate).map(([date, rows]) => `
+          <div class="event-day">${escapeHtml(date)}</div>
+          ${rows.map((row) => `<div class="event-line">${escapeHtml(row.item)} ${row.quantity || ""}${escapeHtml(row.unit || "")} · ${escapeHtml(row.vendor || "")}</div>`).join("")}
+        `).join("");
+        return `
+          <details class="project-card">
+            <summary>
+              <div class="project-title"><span>${escapeHtml(name)}</span><span>${list.length}</span></div>
+              <div class="project-total">${money.format(total)}</div>
+            </summary>
+            <div class="project-events">${events}</div>
+          </details>
+        `;
+      }).join("");
+    }
+
+    function renderTable() {
+      const rows = filteredRecords();
+      $("emptyState").style.display = rows.length ? "none" : "block";
+      $("recordRows").innerHTML = rows.map((record) => `
+        <tr>
+          <td>${escapeHtml(record.date)}</td>
+          <td>${escapeHtml(record.project || "-")}</td>
+          <td>${escapeHtml(record.vendor || "-")}</td>
+          <td>${escapeHtml(record.item || "-")}</td>
+          <td>${record.quantity || ""}</td>
+          <td>${escapeHtml(record.unit || "")}</td>
+          <td><select data-category="${record.id}">${settings.categories.map((category) => `<option value="${escapeHtml(category)}" ${category === record.category ? "selected" : ""}>${escapeHtml(category)}</option>`).join("")}</select></td>
+          <td class="money"><input class="amount-input" type="number" min="0" step="1" placeholder="待補" value="${escapeHtml(record.amount ?? "")}" data-amount="${record.id}"></td>
+          <td><button class="icon-btn" title="刪除" data-delete="${record.id}">×</button></td>
+        </tr>
+      `).join("");
+    }
+
+    function render() {
+      const selectedProject = $("projectSelect")?.value || settings.projects[0];
+      const selectedVendor = $("vendorSelect")?.value || settings.vendors[0];
+      const selectedCategory = $("categorySelect")?.value || settings.categories[0];
+      fillSelect("projectSelect", settings.projects, selectedProject);
+      fillSelect("vendorSelect", settings.vendors, selectedVendor);
+      fillSelect("categorySelect", settings.categories, selectedCategory);
+      fillSelect("projectFilter", unique(records.map((record) => record.project).filter(Boolean)), $("projectFilter").value, "全部");
+      fillSelect("vendorFilter", unique(records.map((record) => record.vendor).filter(Boolean)), $("vendorFilter").value, "全部");
+
+      const total = records.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+      $("totalCount").textContent = records.length;
+      $("totalAmount").textContent = money.format(total);
+      $("projectCount").textContent = unique(records.map((record) => record.project).filter(Boolean)).length;
+      $("vendorCount").textContent = unique(records.map((record) => record.vendor).filter(Boolean)).length;
+
+      renderSidebar();
+      renderTable();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[char]));
+    }
+
+    function toCsv() {
+      const lines = [headers.join(",")];
+      for (const record of records) {
+        const row = [
+          record.date, record.project, record.item, record.quantity, record.unit,
+          record.vendor, record.category, record.amount, record.note, record.raw, record.created_at
+        ].map((value) => `"${String(value ?? "").replace(/"/g, '""')}"`);
+        lines.push(row.join(","));
+      }
+      return "\ufeff" + lines.join("\n");
+    }
+
+    function download(filename, content, type) {
+      const blob = new Blob([content], { type });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    async function addParsedRecords() {
+      const lines = $("quickInput").value.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+      const project = $("projectSelect").value;
+      const vendor = $("vendorSelect").value;
+      const category = $("categorySelect").value;
+      const date = $("recordDate").value || today();
+      if (!project || !vendor || !category) {
+        $("quickNotice").textContent = "\u8acb\u5148\u9078\u64c7\u6848\u5b50\u3001\u5ee0\u5546\u548c\u5206\u985e\u3002";
+        return;
+      }
+      if (!lines.length) {
+        $("quickNotice").textContent = "\u8acb\u5148\u8cbc\u4e0a\u53eb\u8ca8\u5167\u5bb9\u3002";
+        return;
+      }
+      const parsed = lines.map((line) => parseLine(line, project, vendor, date, category));
+      records = [...parsed, ...records];
+      await persistRecords();
+      $("quickInput").value = "";
+      $("quickNotice").textContent = `\u5df2\u6574\u7406\u4e26\u5beb\u5165 ${parsed.length} \u7b46\u8cc7\u6599\uff0c\u91d1\u984d\u53ef\u4ee5\u4e4b\u5f8c\u5728\u660e\u7d30\u8868\u88dc\u4e0a\u3002`;
+      hydrateSettingsFromRecords();
+      render();
+    }
+
+    async function syncExcel() {
+      const excelPath = prompt("請輸入要同步的 Excel 完整路徑", config.excel_path || "C:\\\\Users\\\\awer9\\\\Documents\\\\New project\\\\company-accounting.xlsx");
+      if (!excelPath) return;
+      $("syncBtn").disabled = true;
+      $("syncBtn").textContent = "同步中";
+      try {
+        const result = await requestJson("/api/sync", {
+          method: "POST",
+          body: JSON.stringify({ excel_path: excelPath, records })
+        });
+        config.excel_path = result.excel_path;
+        alert(`已同步 ${result.count} 筆資料到 Excel。`);
+      } catch {
+        alert("同步失敗，請確認已用啟動檔開啟 app，且 Excel 檔案沒有正在被鎖定。");
+      } finally {
+        $("syncBtn").disabled = false;
+        $("syncBtn").textContent = "同步 Excel";
+      }
+    }
+
+    async function syncCloudNow() {
+      if (!cloudEnabled()) {
+        alert("\u9084\u6c92\u6709\u8a2d\u5b9a\u96f2\u7aef\u8cc7\u6599\u5eab\u3002\u8acb\u5148\u5230 cloud-config.js \u586b\u5165 Supabase URL \u548c anon key\u3002");
+        return;
+      }
+      $("cloudSyncBtn").disabled = true;
+      $("cloudSyncBtn").textContent = "\u540c\u6b65\u4e2d";
+      try {
+        const cloudRecords = await loadCloudRecords();
+        records = mergeRecords(records, cloudRecords);
+        hydrateSettingsFromRecords();
+        await persistRecords();
+        render();
+        alert("\u96f2\u7aef\u540c\u6b65\u5b8c\u6210\u3002");
+      } catch {
+        alert("\u96f2\u7aef\u540c\u6b65\u5931\u6557\uff0c\u8acb\u6aa2\u67e5 cloud-config.js \u548c Supabase \u8cc7\u6599\u8868\u8a2d\u5b9a\u3002");
+      } finally {
+        $("cloudSyncBtn").disabled = false;
+        $("cloudSyncBtn").textContent = "\u540c\u6b65\u96f2\u7aef";
+      }
+    }
+
+    $("recordDate").value = today();
+    $("parseBtn").addEventListener("click", addParsedRecords);
+    $("clearInputBtn").addEventListener("click", () => {
+      $("quickInput").value = "";
+      $("quickNotice").textContent = "";
+    });
+    $("addProjectBtn").addEventListener("click", () => addOption("projects"));
+    $("deleteProjectBtn").addEventListener("click", () => deleteOption("projects"));
+    $("addVendorBtn").addEventListener("click", () => addOption("vendors"));
+    $("deleteVendorBtn").addEventListener("click", () => deleteOption("vendors"));
+    $("addCategoryBtn").addEventListener("click", () => addOption("categories"));
+    $("deleteCategoryBtn").addEventListener("click", () => deleteOption("categories"));
+    $("syncBtn").addEventListener("click", syncExcel);
+    $("cloudSyncBtn").addEventListener("click", syncCloudNow);
+    $("exportCsvBtn").addEventListener("click", () => download(`accounting-${today()}.csv`, toCsv(), "text/csv;charset=utf-8"));
+    $("clearAllBtn").addEventListener("click", async () => {
+      if (!confirm("確定要清除所有資料？")) return;
+      records = [];
+      await persistRecords();
+      render();
+    });
+    $("recordRows").addEventListener("click", async (event) => {
+      const id = event.target.dataset.delete;
+      if (!id) return;
+      records = records.filter((record) => record.id !== id);
+      await persistRecords();
+      render();
+    });
+    $("recordRows").addEventListener("change", async (event) => {
+      const id = event.target.dataset.amount || event.target.dataset.category;
+      if (!id) return;
+      const record = records.find((item) => item.id === id);
+      if (!record) return;
+      if (event.target.dataset.amount) {
+        record.amount = event.target.value === "" ? "" : cleanNumber(event.target.value);
+      }
+      if (event.target.dataset.category) {
+        record.category = event.target.value;
+        hydrateSettingsFromRecords();
+      }
+      record.updated_at = new Date().toISOString();
+      await persistRecords();
+      renderSidebar();
+      $("totalAmount").textContent = money.format(records.reduce((sum, item) => sum + (Number(item.amount) || 0), 0));
+    });
+    ["search", "projectFilter", "vendorFilter"].forEach((id) => $(id).addEventListener("input", render));
+
+    loadData();
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+  </script>
+</body>
+</html>

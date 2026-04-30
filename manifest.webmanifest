@@ -1,0 +1,19 @@
+{
+  "name": "\u516c\u53f8\u8a18\u5e33\u6574\u7406",
+  "short_name": "\u516c\u53f8\u8a18\u5e33",
+  "description": "\u6279\u6b21\u6574\u7406\u53eb\u8ca8\u5167\u5bb9\u3001\u6848\u5b50\u3001\u5ee0\u5546\u8207\u91d1\u984d\u7684\u672c\u6a5f\u8a18\u5e33\u5de5\u5177\u3002",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f6f3",
+  "theme_color": "#176b62",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
