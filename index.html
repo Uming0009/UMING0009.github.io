@@ -473,7 +473,7 @@
           <div>
             <div class="field">
               <label for="quickInput">&#21483;&#36008;&#20839;&#23481;</label>
-              <textarea id="quickInput" placeholder="&#32048;&#33865;&#26460;&#40509;6&#21515;500;&#10;&#29066;&#35987;&#20185;&#20025;6&#21515;*400;&#10;&#27700;&#27877;20&#21253;"></textarea>
+              <textarea id="quickInput" placeholder="&#26609;&#24418;&#32645;&#28450;&#26494;1.8&#31859;&#39640; * 25;&#10;&#32043;&#34183;1.2&#65374;1.5&#31859;&#39640; * 42;&#10;&#32048;&#33865;&#26460;&#40509;6&#21515;500;"></textarea>
             </div>
             <div class="actions">
               <button class="btn primary" id="parseBtn">&#25972;&#29702;&#20006;&#21152;&#20837;</button>
@@ -805,7 +805,7 @@
         ["\u4eba\u5de5", ["\u5de5\u8cc7", "\u4eba\u5de5", "\u5e2b\u5085", "\u9ede\u5de5"]],
         ["\u4e94\u91d1", ["\u87ba\u7d72", "\u9435\u91d8", "\u9278\u934a", "\u4e94\u91d1", "\u9396"]],
         ["\u8a2d\u5099", ["\u6a5f\u5177", "\u8a2d\u5099", "\u79df", "\u540a\u8eca", "\u767c\u96fb\u6a5f"]],
-        ["\u690d\u683d", ["\u675c\u9d51", "\u6a39", "\u82d7", "\u82b1", "\u8449", "\u76c6", "\u690d"]],
+        ["\u690d\u683d", ["\u675c\u9d51", "\u7f85\u6f22\u677e", "\u7d2b\u8587", "\u6a39", "\u677e", "\u82d7", "\u82b1", "\u8449", "\u76c6", "\u690d"]],
         ["\u6750\u6599", ["\u6c34\u6ce5", "\u7802", "\u6c99", "\u78da", "\u677f", "\u6f06", "\u7ba1", "\u7dda", "\u6728", "\u92fc", "\u77f3"]]
       ];
       const found = rules.find(([, words]) => words.some((word) => text.includes(word)));
@@ -815,9 +815,11 @@
     function parseLine(line, project, vendor, date, category) {
       const raw = line.trim();
       const compact = raw.replace(/\s+/g, "");
-      const sizeUnits = "\u540b|\u5c3a|\u5bf8|\u516c\u5206|cm|CM|mm|MM";
+      const sizeUnits = "\u7c73|\u516c\u5c3a|m|M|\u540b|\u5c3a|\u5bf8|\u516c\u5206|cm|CM|mm|MM";
+      const sizeSuffix = "\u9ad8|\u5bec|\u51a0\u5e45|\u5f91|\u80f8\u5f91|H|W|D";
+      const sizeValue = `\\d+(?:\\.\\d+)?(?:[~\uff5e\\-\u2013\u2014\u5230\u81f3]\\d+(?:\\.\\d+)?)?(?:${sizeUnits})(?:${sizeSuffix})?`;
       const countUnits = "\u5305|\u7bb1|\u500b|\u652f|\u5f0f|\u7d44|\u6876|\u5377|\u7247|\u7c73|\u624d|\u516c\u65a4|kg|KG|\u76d2|\u888b|\u682a|\u76c6";
-      const sizeQtyMatch = compact.match(new RegExp(`^(.+?)(\\d+(?:\\.\\d+)?(?:${sizeUnits}))(?:[*\uff0axX])?(\\d+(?:\\.\\d+)?)$`));
+      const sizeQtyMatch = compact.match(new RegExp(`^(.+?)(${sizeValue})(?:[*\uff0a\u00d7xX])?(\\d+(?:\\.\\d+)?)$`));
       const countMatch = compact.match(new RegExp(`^(.+?)(\\d+(?:\\.\\d+)?)(${countUnits})$`));
       const explicitAmountMatch = compact.match(/(?:\u91d1\u984d|\u5171|\u5408\u8a08|[$\uff04])(\d+(?:\.\d+)?)\u5143?$/);
       let item = raw;
