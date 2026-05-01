@@ -845,6 +845,15 @@
       return match ? Number(match[0]) : 0;
     }
 
+    function normalizeOrderText(value) {
+      return String(value)
+        .replace(/[＊﹡∗∙·・✕✖✗✘×╳]/g, "*")
+        .replace(/([^\d])\s*[xX]\s*(\d)/g, "$1*$2")
+        .replace(/(\d)\s*[xX]\s*(\d)/g, "$1*$2")
+        .replace(/[：:]/g, "")
+        .trim();
+    }
+
     function inferCategory(text) {
       const rules = [
         ["\u904b\u8cbb", ["\u904b\u8cbb", "\u914d\u9001", "\u8ca8\u904b", "\u642c\u904b"]],
@@ -860,15 +869,15 @@
 
     function parseLine(line, project, vendor, date, category) {
       const raw = line.trim();
-      const compact = raw.replace(/\s+/g, "");
+      const compact = normalizeOrderText(raw).replace(/\s+/g, "");
       const sizeUnits = "\u7c73|\u516c\u5c3a|m|M|\u540b|\u5c3a|\u5bf8|\u516c\u5206|cm|CM|mm|MM";
       const sizeSuffix = "\u9ad8|\u5bec|\u51a0\u5e45|\u5f91|\u80f8\u5f91|H|W|D";
       const sizeValue = `\\d+(?:\\.\\d+)?(?:[~\uff5e\\-\u2013\u2014\u5230\u81f3]\\d+(?:\\.\\d+)?)?(?:${sizeUnits})(?:${sizeSuffix})?`;
       const countUnits = "\u592a\u7a7a\u5305|\u5305|\u7bb1|\u500b|\u652f|\u5f0f|\u7d44|\u6876|\u5377|\u7247|\u7c73|\u624d|\u516c\u65a4|kg|KG|\u76d2|\u888b|\u682a|\u76c6";
-      const sizeQtyMatch = compact.match(new RegExp(`^(.+?)(${sizeValue})(?:[*\uff0a\u00d7xX])?(\\d+(?:\\.\\d+)?)$`));
+      const sizeQtyMatch = compact.match(new RegExp(`^(.+?)(${sizeValue})(?:[*])?(\\d+(?:\\.\\d+)?)$`));
       const countMatch = compact.match(new RegExp(`^(.+?)(\\d+(?:\\.\\d+)?)(${countUnits})$`));
-      const unitStarQtyMatch = compact.match(new RegExp(`^(.+?)((?:${sizeValue})|(?:${countUnits}))(?:[*\uff0a\u00d7xX])(\\d+(?:\\.\\d+)?)$`));
-      const starQtyMatch = compact.match(/^(.*?)(?:[*\uff0a\u00d7xX])(\d+(?:\.\d+)?)$/);
+      const unitStarQtyMatch = compact.match(new RegExp(`^(.+?)((?:${sizeValue})|(?:${countUnits}))(?:[*])(\\d+(?:\\.\\d+)?)$`));
+      const starQtyMatch = compact.match(/^(.*?)(?:[*])(\d+(?:\.\d+)?)$/);
       const explicitAmountMatch = compact.match(/(?:\u91d1\u984d|\u5171|\u5408\u8a08|[$\uff04])(\d+(?:\.\d+)?)\u5143?$/);
       let item = raw;
       let quantity = "";
